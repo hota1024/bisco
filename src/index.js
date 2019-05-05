@@ -16,7 +16,7 @@ class Bisco {
   }
 
   registerDefaultCommands() {
-    this.command('help|', msg => {
+    this.command('help', msg => {
       let fields = [
         {
           name: 'version',
@@ -40,16 +40,19 @@ class Bisco {
   executeCommand(msg) {
     if (this.prefix === '') throw new Error('[Bisco Error] prefix can not be empty. ')
     if (msg.author.bot) return
-    if (msg.content.startsWith(this.prefix))
-    if (msg.content.match(/bisco/)) {
+    if (!msg.content.startsWith(this.prefix)) return
+
+    const cmd = msg.content.replace(this.prefix, '')
+
+    if (cmd === 'bisco version') {
       msg.reply(`Bisco v.${pack.version}`)
       return
     }
 
     for (let i = 0; i < this.commands.length; ++i) {
       let command = this.commands[i]
-      if (command.getRegexp().test(msg.content)) {
-        command.execute(this, msg)
+      if (command.getRegexp().test(cmd)) {
+        command.execute(this, msg, cmd)
         return
       }
     }

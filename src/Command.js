@@ -14,7 +14,7 @@ class Command {
       .replace(/\-/g, '\\-') // -をエスケープ
       .replace(/\{[a-zA-Z0-9]*\}/g, '(.*)') // {}を()に変換
     
-    return new RegExp(string)
+    return new RegExp(`^${string}$`)
   }
 
   getArgumentNames() {
@@ -29,8 +29,8 @@ class Command {
     return this
   }
 
-  execute(bisco, msg) {
-    let matches = msg.content.match(this.getRegexp())
+  execute(bisco, msg, cmd) {
+    let matches = cmd.match(this.getRegexp())
     matches = matches.slice(1)
 
     let args = {}
