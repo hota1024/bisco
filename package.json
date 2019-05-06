@@ -1,6 +1,6 @@
 {
   "name": "bisco",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Library for creating Discord bot.",
   "main": "src/index.js",
   "scripts": {
