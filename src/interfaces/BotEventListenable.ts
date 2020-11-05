@@ -41,7 +41,7 @@ export type RateLimitInfo = {
 /*
  * BotEventListenableInterface.
  */
-export interface BotEventListenableInterface {
+export interface IBotEventListenableInterface {
   /*
    * emitted whenever a channel is created.
    */
