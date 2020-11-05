@@ -38,7 +38,9 @@
     "ttypescript": "^1.5.10",
     "typescript": "^3.9.6"
   },
-  "dependencies": {},
+  "dependencies": {
+    "discord.js": "^12.4.1"
+  },
   "jest": {
     "moduleFileExtensions": [
       "ts",
