@@ -10,12 +10,15 @@ import {
   Role,
   TextChannel,
   VoiceState,
-  DMChannel,
-  GuildChannel,
   GuildEmoji,
   Invite,
   Presence,
   Speaking,
+  PartialDMChannel,
+  PartialGuildMember,
+  PartialMessage,
+  PartialUser,
+  CloseEvent,
 } from 'discord.js'
 
 /**
@@ -45,28 +48,25 @@ export interface IBotEventListenableInterface {
   /*
    * emitted whenever a channel is created.
    */
-  onChannelCreate(handler: (channel: DMChannel | GuildChannel) => void): void
+  onChannelCreate(handler: (channel: Channel) => void): void
 
   /*
    * emitted whenever a channel is deleted.
    */
-  onChannelDelete(handler: (channel: DMChannel | GuildChannel) => void): void
+  onChannelDelete(handler: (channel: Channel) => void): void
 
   /*
    * emitted whenever the pins of a channel are updated. due to the nature of the websocket event, not much information can be provided easily here - you need to manually check the pins yourself.
    */
   onChannelPinsUpdate(
-    handler: (channel: DMChannel | TextChannel, time: Date) => void
+    handler: (channel: Channel | PartialDMChannel, time: Date) => void
   ): void
 
   /*
    * emitted whenever a channel is updated - e.g. name change, topic change, channel type change.
    */
   onChannelUpdate(
-    handler: (
-      oldChannel: DMChannel | GuildChannel,
-      newChannel: DMChannel | GuildChannel
-    ) => void
+    handler: (oldChannel: Channel, newChannel: Channel) => void
   ): void
 
   /*
@@ -129,7 +129,9 @@ export interface IBotEventListenableInterface {
   /*
    * emitted whenever a member leaves a guild, or is kicked.
    */
-  onGuildMemberRemove(handler: (member: GuildMember) => void): void
+  onGuildMemberRemove(
+    handler: (member: GuildMember | PartialGuildMember) => void
+  ): void
 
   /*
    * emitted whenever a chunk of guild members is received (all members come from the same guild).
@@ -146,14 +148,20 @@ export interface IBotEventListenableInterface {
    * emitted once a guild member changes speaking state.
    */
   onGuildMemberSpeaking(
-    handler: (member: GuildMember, speaking: Speaking) => void
+    handler: (
+      member: GuildMember | PartialGuildMember,
+      speaking: Readonly<Speaking>
+    ) => void
   ): void
 
   /*
    * emitted whenever a guild member changes - i.e. new role, removed role, nickname. also emitted when the user's details (e.g. username) change.
    */
   onGuildMemberUpdate(
-    handler: (oldMember: GuildMember, newMember: GuildMember) => void
+    handler: (
+      oldMember: GuildMember | PartialGuildMember,
+      newMember: GuildMember
+    ) => void
   ): void
 
   /*
@@ -173,15 +181,13 @@ export interface IBotEventListenableInterface {
 
   /*
    * emitted when an invite is created.
-
-this event only triggers if the client has manage_guild permissions for the guild, or manage_channel permissions for the channel.
+   * this event only triggers if the client has manage_guild permissions for the guild, or manage_channel permissions for the channel.
    */
   onInviteCreate(handler: (invite: Invite) => void): void
 
   /*
    * emitted when an invite is deleted.
-
-this event only triggers if the client has manage_guild permissions for the guild, or manage_channel permissions for the channel.
+   * this event only triggers if the client has manage_guild permissions for the guild, or manage_channel permissions for the channel.
    */
   onInviteDelete(handler: (invite: Invite) => void): void
 
@@ -193,33 +199,41 @@ this event only triggers if the client has manage_guild permissions for the guil
   /*
    * emitted whenever a message is deleted.
    */
-  onMessageDelete(handler: (message: Message) => void): void
+  onMessageDelete(handler: (message: Message | PartialMessage) => void): void
 
   /*
    * emitted whenever messages are deleted in bulk.
    */
   onMessageDeleteBulk(
-    handler: (messages: Collection<Snowflake, Message>) => void
+    handler: (messages: Collection<string, Message | PartialMessage>) => void
   ): void
 
   /*
    * emitted whenever a reaction is added to a cached message.
    */
   onMessageReactionAdd(
-    handler: (messageReaction: MessageReaction, user: User) => void
+    handler: (
+      messageReaction: MessageReaction,
+      user: User | PartialUser
+    ) => void
   ): void
 
   /*
    * emitted whenever a reaction is removed from a cached message.
    */
   onMessageReactionRemove(
-    handler: (messageReaction: MessageReaction, user: User) => void
+    handler: (
+      messageReaction: MessageReaction,
+      user: User | PartialUser
+    ) => void
   ): void
 
   /*
    * emitted whenever all reactions are removed from a cached message.
    */
-  onMessageReactionRemoveAll(handler: (message: Message) => void): void
+  onMessageReactionRemoveAll(
+    handler: (message: Message | PartialMessage) => void
+  ): void
 
   /*
    * emitted when a bot removes an emoji reaction from a cached message.
@@ -232,14 +246,17 @@ this event only triggers if the client has manage_guild permissions for the guil
    * emitted whenever a message is updated - e.g. embed or content change.
    */
   onMessageUpdate(
-    handler: (oldMessage: Message, newMessage: Message) => void
+    handler: (
+      oldMessage: Message | PartialMessage,
+      newMessage: Message | PartialMessage
+    ) => void
   ): void
 
   /*
    * emitted whenever a guild member's presence (e.g. status, activity) is changed.
    */
   onPresenceUpdate(
-    handler: (oldPresence: Presence, newPresence: Presence) => void
+    handler: (oldPresence: Presence | undefined, newPresence: Presence) => void
   ): void
 
   /*
@@ -297,12 +314,19 @@ this event only triggers if the client has manage_guild permissions for the guil
   /*
    * emitted whenever a user starts typing in a channel.
    */
-  onTypingStart(handler: (channel: Channel, user: User) => void): void
+  onTypingStart(
+    handler: (
+      channel: Channel | PartialDMChannel,
+      user: User | PartialUser
+    ) => void
+  ): void
 
   /*
    * emitted whenever a user's details (e.g. username) are changed. triggered by the discord gateway events user_update, guild_member_update, and presence_update.
    */
-  onUserUpdate(handler: (oldUser: User, newUser: User) => void): void
+  onUserUpdate(
+    handler: (oldUser: User | PartialUser, newUser: User | PartialUser) => void
+  ): void
 
   /*
    * emitted whenever a member changes voice state - e.g. joins/leaves a channel, mutes/unmutes.
